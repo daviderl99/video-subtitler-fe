@@ -2,49 +2,15 @@
   <header class="header">
     <h1 class="logo">&#127916; Video Subtitler</h1>
     <p class="tagline">Upload a video, pick your target language, and get an SRT subtitle file.</p>
+    <app-theme-toggle />
   </header>
 
   <main class="card">
     <!-- Drop Zone -->
-    <div class="drop-zone" [class.dragging]="isDragging()" [class.has-file]="selectedFile()"
-      (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)" (click)="fileInput.click()">
-      <input #fileInput type="file" accept="video/*" hidden (change)="onFileSelected($event)" />
-      @if (selectedFile()) {
-      <div class="file-info">
-        <span class="file-icon">&#127916;</span>
-        <span class="file-name">{{ selectedFileName }}</span>
-        <span class="file-size">{{ (selectedFile()!.size / 1024 / 1024).toFixed(1) }} MB</span>
-      </div>
-      } @else {
-      <div class="drop-prompt">
-        <span class="drop-icon">&#8679;</span>
-        <p>Drag &amp; drop a video file here, or <span class="link">browse</span></p>
-        <p class="hint">MP4, MOV, MKV, WEBM &hellip;</p>
-      </div>
-      }
-    </div>
+    <app-drop-zone [(file)]="selectedFile" />
 
     <!-- Language Controls -->
-    <div class="controls">
-      <div class="field">
-        <label for="source-lang">Source language <span class="optional">(auto-detect)</span></label>
-        <select id="source-lang" [(ngModel)]="sourceLanguage">
-          <option value="">Auto-detect</option>
-          @for (lang of languages; track lang.code) {
-          <option [value]="lang.code">{{ lang.name }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="target-lang">Target language <span class="required">*</span></label>
-        <select id="target-lang" [(ngModel)]="targetLanguage">
-          @for (lang of languages; track lang.code) {
-          <option [value]="lang.code">{{ lang.name }}</option>
-          }
-        </select>
-      </div>
-    </div>
+    <app-language-controls [(sourceLanguage)]="sourceLanguage" [(targetLanguage)]="targetLanguage" />
 
     <!-- Submit Button -->
     <button class="btn-primary" [disabled]="!canSubmit()" (click)="submit()">
@@ -62,18 +28,7 @@
 
     <!-- Result -->
     @if (srtContent()) {
-    <div class="result">
-      <div class="result-header">
-        <div>
-          <h2>Subtitles ready!</h2>
-          @if (detectedLanguage()) {
-          <p class="detected">Detected source language: <strong>{{ detectedLanguageName }}</strong></p>
-          }
-        </div>
-        <button class="btn-download" (click)="downloadSrt()">&#10515; Download .srt</button>
-      </div>
-      <pre class="srt-preview">{{ srtContent() }}</pre>
-    </div>
+    <app-subtitle-result [srtContent]="srtContent()!" [detectedLanguage]="detectedLanguage()" />
     }
   </main>
 </div>

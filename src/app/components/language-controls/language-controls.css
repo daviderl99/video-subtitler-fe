@@ -1,0 +1,52 @@
+/* ── Controls ── */
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--label-color);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.required {
+  color: var(--color-required);
+}
+
+.field select {
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.95rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  appearance: auto;
+  transition:
+    border-color 0.2s,
+    background-color 0.25s,
+    color 0.25s;
+}
+
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+}

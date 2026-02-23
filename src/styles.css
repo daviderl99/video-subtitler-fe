@@ -1,5 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
 
 *,
@@ -7,6 +5,69 @@
 *::after {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
+  --bg-page: #f8f9fb;
+  --bg-card: #ffffff;
+  --bg-drop: #fafbff;
+  --bg-drop-hover: #f0f3ff;
+  --bg-has-file: #f1faf2;
+  --bg-code: #f4f5f7;
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --text-body: #444;
+  --text-muted: #888;
+  --text-muted-2: #777;
+  --text-code: #333;
+  --border-color: #d0d5e8;
+  --border-has-file: #43a047;
+  --accent: #5c6bc0;
+  --accent-hover: #3f51b5;
+  --btn-disabled: #b0bec5;
+  --btn-disabled-text: #fff;
+  --btn-download: #43a047;
+  --btn-download-hover: #2e7d32;
+  --alert-error-bg: #fff3f3;
+  --alert-error-border: #f5c6c6;
+  --alert-error-text: #c62828;
+  --color-required: #e53935;
+  --label-color: #333;
+  --toggle-bg: #d0d5e8;
+  --toggle-thumb: #ffffff;
+  --toggle-icon: #555;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
+}
+
+body.dark {
+  --bg-page: #0f0f1a;
+  --bg-card: #1e1e2e;
+  --bg-drop: #16162a;
+  --bg-drop-hover: #252545;
+  --bg-has-file: #162017;
+  --bg-code: #16162a;
+  --text-primary: #e4e4f0;
+  --text-secondary: #aaa;
+  --text-body: #bbb;
+  --text-muted: #777;
+  --text-muted-2: #666;
+  --text-code: #c5c5d5;
+  --border-color: #3a3a5c;
+  --border-has-file: #4caf50;
+  --accent: #7986d8;
+  --accent-hover: #5c6bc0;
+  --btn-disabled: #3a3a5c;
+  --btn-disabled-text: #666;
+  --btn-download: #4caf50;
+  --btn-download-hover: #388e3c;
+  --alert-error-bg: #2a1010;
+  --alert-error-border: #7a2c2c;
+  --alert-error-text: #ef9a9a;
+  --color-required: #ef5350;
+  --label-color: #c0c0d8;
+  --toggle-bg: #3a3a5c;
+  --toggle-thumb: #7986d8;
+  --toggle-icon: #aaa;
 }

@@ -1,0 +1,4 @@
+<button class="toggle-btn" (click)="toggle()" [title]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+  aria-label="Toggle theme">
+  {{ isDark() ? '☀️' : '🌙' }}
+</button>
