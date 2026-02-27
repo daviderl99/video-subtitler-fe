@@ -1,0 +1,33 @@
+:host {
+  position: absolute;
+  top: 50%;
+  right: -3.5rem;
+  transform: translateY(-50%);
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--toggle-icon);
+  transition:
+    background 0.2s,
+    color 0.2s;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.toggle-btn:hover {
+  background: var(--border-color);
+}
+
+@media (max-width: 600px) {
+  :host {
+    right: 0;
+  }
+}

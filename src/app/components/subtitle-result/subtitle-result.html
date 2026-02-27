@@ -1,0 +1,12 @@
+<div class="result">
+  <div class="result-header">
+    <div>
+      <h2>Subtitles ready!</h2>
+      @if (detectedLanguage()) {
+      <p class="detected">Detected source language: <strong>{{ detectedLanguageName }}</strong></p>
+      }
+    </div>
+    <button class="btn-download" (click)="download()">&#10515; Download .srt</button>
+  </div>
+  <pre class="srt-preview">{{ srtContent() }}</pre>
+</div>

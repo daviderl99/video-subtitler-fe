@@ -1,0 +1,17 @@
+<div class="drop-zone" [class.dragging]="isDragging()" [class.has-file]="file()" (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()" (drop)="onDrop($event)" (click)="fileInput.click()">
+  <input #fileInput type="file" accept="video/*" hidden (change)="onFileSelected($event)" />
+  @if (file()) {
+  <div class="file-info">
+    <span class="file-icon">&#127916;</span>
+    <span class="file-name">{{ fileName }}</span>
+    <span class="file-size">{{ (file()!.size / 1024 / 1024).toFixed(1) }} MB</span>
+  </div>
+  } @else {
+  <div class="drop-prompt">
+    <span class="drop-icon">&#8679;</span>
+    <p>Drag &amp; drop a video file here, or <span class="link">browse</span></p>
+    <p class="hint">MP4, MOV, MKV, WEBM &hellip;</p>
+  </div>
+  }
+</div>
