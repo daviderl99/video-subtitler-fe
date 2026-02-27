@@ -23,15 +23,6 @@
   color: var(--label-color);
 }
 
-.optional {
-  font-weight: 400;
-  color: var(--text-muted);
-}
-
-.required {
-  color: var(--color-required);
-}
-
 .field select {
   border: 1.5px solid var(--border-color);
   border-radius: 8px;

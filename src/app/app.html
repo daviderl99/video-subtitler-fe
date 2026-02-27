@@ -1,18 +1,15 @@
 <div class="page">
   <header class="header">
-    <h1 class="logo">&#127916; Video Subtitler</h1>
+    <h1 class="title">AI Video Subtitler</h1>
     <p class="tagline">Upload a video, pick your target language, and get an SRT subtitle file.</p>
     <app-theme-toggle />
   </header>
 
   <main class="card">
-    <!-- Drop Zone -->
     <app-drop-zone [(file)]="selectedFile" />
 
-    <!-- Language Controls -->
     <app-language-controls [(sourceLanguage)]="sourceLanguage" [(targetLanguage)]="targetLanguage" />
 
-    <!-- Submit Button -->
     <button class="btn-primary" [disabled]="!canSubmit()" (click)="submit()">
       @if (isProcessing()) {
       <span class="spinner"></span> Processing&hellip;
@@ -21,12 +18,10 @@
       }
     </button>
 
-    <!-- Error -->
     @if (errorMessage()) {
     <div class="alert alert-error">{{ errorMessage() }}</div>
     }
 
-    <!-- Result -->
     @if (srtContent()) {
     <app-subtitle-result [srtContent]="srtContent()!" [detectedLanguage]="detectedLanguage()" />
     }
