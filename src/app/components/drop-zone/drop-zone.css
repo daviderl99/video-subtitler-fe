@@ -1,4 +1,3 @@
-/* ── Drop zone ── */
 .drop-zone {
   border: 2px dashed var(--border-color);
   border-radius: 12px;
@@ -47,7 +46,6 @@
   cursor: pointer;
 }
 
-/* ── Selected file display ── */
 .file-info {
   display: flex;
   align-items: center;
