@@ -51,10 +51,6 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
-            },
-            "github-pages": {
-              "baseHref": "/video-subtitler-fe/",
-              "outputMode": "static"
             }
           },
           "defaultConfiguration": "production"
