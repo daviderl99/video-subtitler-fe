@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 export interface ProcessResponse {
   status: string;
@@ -11,7 +12,7 @@ export interface ProcessResponse {
 @Injectable({ providedIn: 'root' })
 export class SubtitleService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000';
+  private readonly apiUrl = environment.apiUrl;
 
   processVideo(
     file: File,
