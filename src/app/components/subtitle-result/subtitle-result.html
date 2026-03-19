@@ -6,7 +6,18 @@
       <p class="detected">Detected source language: <strong>{{ detectedLanguageName }}</strong></p>
       }
     </div>
-    <button class="btn-download" (click)="download()">&#10515; Download .srt</button>
+    <div class="result-actions">
+      <button class="btn-download" (click)="download()">&#10515; Download .srt</button>
+      @if (showVideoDownload()) {
+      <button class="btn-download" [disabled]="videoPending() || !videoDownloadUrl()" (click)="downloadVideo()">
+        @if (videoPending()) {
+        Preparing video...
+        } @else {
+        &#10515; Download video
+        }
+      </button>
+      }
+    </div>
   </div>
   <pre class="srt-preview">{{ srtContent() }}</pre>
 </div>
