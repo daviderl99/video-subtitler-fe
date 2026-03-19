@@ -10,6 +10,11 @@
 
     <app-language-controls [(sourceLanguage)]="sourceLanguage" [(targetLanguage)]="targetLanguage" />
 
+    <label class="burn-option">
+      <input type="checkbox" [checked]="burnSubtitles()" (change)="onBurnSubtitlesChange($event)" />
+      Burn subtitles into the video
+    </label>
+
     <button class="btn-primary" [disabled]="!canSubmit()" (click)="submit()">
       @if (isProcessing()) {
       <span class="spinner"></span> Processing&hellip;
@@ -23,7 +28,9 @@
     }
 
     @if (srtContent()) {
-    <app-subtitle-result [srtContent]="srtContent()!" [detectedLanguage]="detectedLanguage()" />
+    <app-subtitle-result [srtContent]="srtContent()!" [detectedLanguage]="detectedLanguage()"
+      [showVideoDownload]="burnSubtitles()" [videoDownloadUrl]="videoDownloadUrl()" [videoFileName]="videoFileName()"
+      [videoPending]="isPreparingVideo()" />
     }
   </main>
 </div>

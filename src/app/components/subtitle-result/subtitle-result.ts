@@ -9,6 +9,10 @@ import { LANGUAGES } from '../../languages';
 export class SubtitleResult {
   readonly srtContent = input.required<string>();
   readonly detectedLanguage = input<string | null>(null);
+  readonly showVideoDownload = input(false);
+  readonly videoDownloadUrl = input<string | null>(null);
+  readonly videoFileName = input('video_subtitled.mp4');
+  readonly videoPending = input(false);
 
   get detectedLanguageName(): string {
     const code = this.detectedLanguage();
@@ -25,5 +29,17 @@ export class SubtitleResult {
     a.download = 'subtitles.srt';
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  downloadVideo(): void {
+    const url = this.videoDownloadUrl();
+    if (!url) return;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = this.videoFileName();
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.click();
   }
 }
