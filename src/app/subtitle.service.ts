@@ -23,19 +23,26 @@ export class SubtitleService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
+  private readonly processEndpoint = `${this.apiUrl}/process`;
+
   processVideo(
     file: File,
     targetLanguage: string,
     sourceLanguage?: string,
   ): Observable<ProcessResponse> {
-    const form = new FormData();
+    const form = this.buildProcessFormData(targetLanguage, sourceLanguage, false);
     form.append('file', file);
-    form.append('target_language', targetLanguage);
-    if (sourceLanguage) {
-      form.append('source_language', sourceLanguage);
-    }
-    form.append('burn_subtitles', 'false');
-    return this.http.post<ProcessResponse>(`${this.apiUrl}/process`, form);
+    return this.http.post<ProcessResponse>(this.processEndpoint, form);
+  }
+
+  processYouTubeVideo(
+    youtubeUrl: string,
+    targetLanguage: string,
+    sourceLanguage?: string,
+  ): Observable<ProcessResponse> {
+    const form = this.buildProcessFormData(targetLanguage, sourceLanguage, false);
+    form.append('youtube_url', youtubeUrl);
+    return this.http.post<ProcessResponse>(this.processEndpoint, form);
   }
 
   burnVideo(
@@ -43,16 +50,40 @@ export class SubtitleService {
     targetLanguage: string,
     sourceLanguage?: string,
   ): Observable<BurnVideoResponse> {
-    const form = new FormData();
+    const form = this.buildProcessFormData(targetLanguage, sourceLanguage, true);
     form.append('file', file);
+
+    return this.sendBurnRequest(form);
+  }
+
+  burnYouTubeVideo(
+    youtubeUrl: string,
+    targetLanguage: string,
+    sourceLanguage?: string,
+  ): Observable<BurnVideoResponse> {
+    const form = this.buildProcessFormData(targetLanguage, sourceLanguage, true);
+    form.append('youtube_url', youtubeUrl);
+
+    return this.sendBurnRequest(form);
+  }
+
+  private buildProcessFormData(
+    targetLanguage: string,
+    sourceLanguage: string | undefined,
+    burnSubtitles: boolean,
+  ): FormData {
+    const form = new FormData();
     form.append('target_language', targetLanguage);
     if (sourceLanguage) {
       form.append('source_language', sourceLanguage);
     }
-    form.append('burn_subtitles', 'true');
+    form.append('burn_subtitles', String(burnSubtitles));
+    return form;
+  }
 
+  private sendBurnRequest(form: FormData): Observable<BurnVideoResponse> {
     return this.http
-      .post(`${this.apiUrl}/process`, form, {
+      .post(this.processEndpoint, form, {
         observe: 'response',
         responseType: 'blob',
       })

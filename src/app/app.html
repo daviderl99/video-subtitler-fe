@@ -1,12 +1,39 @@
 <div class="page">
   <header class="header">
     <h1 class="title">AI Video Subtitler</h1>
-    <p class="tagline">Upload a video, pick your target language, and get an SRT subtitle file.</p>
+    <p class="tagline">
+      Upload a video or paste a YouTube link, pick your target language, and get an SRT subtitle file.
+    </p>
     <app-theme-toggle />
   </header>
 
   <main class="card">
+    <fieldset class="source-mode" aria-label="Video source mode">
+      <label>
+        <input type="radio" name="sourceMode" [checked]="sourceMode() === 'upload'"
+          (change)="onSourceModeChange('upload')" />
+        Upload file
+      </label>
+      <label>
+        <input type="radio" name="sourceMode" [checked]="sourceMode() === 'youtube'"
+          (change)="onSourceModeChange('youtube')" />
+        YouTube URL
+      </label>
+    </fieldset>
+
+    @if (sourceMode() === 'upload') {
     <app-drop-zone [(file)]="selectedFile" />
+    } @else {
+    <div class="youtube-input-wrap">
+      <label for="youtubeUrl" class="youtube-label">YouTube link</label>
+      <input id="youtubeUrl" class="youtube-input" type="url" [value]="youtubeUrl()"
+        placeholder="https://www.youtube.com/watch?v=..." (input)="onYoutubeUrlChange($event)"
+        [attr.aria-invalid]="youtubeUrlError() ? 'true' : null" />
+      @if (youtubeUrlError()) {
+      <p class="youtube-error">{{ youtubeUrlError() }}</p>
+      }
+    </div>
+    }
 
     <app-language-controls [(sourceLanguage)]="sourceLanguage" [(targetLanguage)]="targetLanguage" />
 

@@ -7,6 +7,8 @@ import { LanguageControls } from './components/language-controls/language-contro
 import { SubtitleResult } from './components/subtitle-result/subtitle-result';
 import { environment } from '../environments/environment';
 
+type VideoSourceMode = 'upload' | 'youtube';
+
 @Component({
   selector: 'app-root',
   imports: [ThemeToggle, DropZone, LanguageControls, SubtitleResult],
@@ -17,7 +19,9 @@ export class App {
   private readonly subtitleService = inject(SubtitleService);
   private objectVideoUrl: string | null = null;
 
+  sourceMode = signal<VideoSourceMode>('upload');
   selectedFile = signal<File | null>(null);
+  youtubeUrl = signal('');
   sourceLanguage = signal('');
   targetLanguage = signal('en');
   burnSubtitles = signal(false);
@@ -29,22 +33,69 @@ export class App {
   videoFileName = signal('video_subtitled.mp4');
   errorMessage = signal<string | null>(null);
 
-  readonly canSubmit = computed(
-    () => !!this.selectedFile() && !!this.targetLanguage() && !this.isProcessing(),
-  );
+  readonly youtubeUrlError = computed(() => {
+    if (this.sourceMode() !== 'youtube') {
+      return null;
+    }
+
+    const url = this.youtubeUrl().trim();
+    if (!url) {
+      return null;
+    }
+
+    return this.isValidYouTubeUrl(url) ? null : 'Enter a valid YouTube URL.';
+  });
+
+  readonly canSubmit = computed(() => {
+    if (!this.targetLanguage() || this.isProcessing() || this.isPreparingVideo()) {
+      return false;
+    }
+
+    if (this.sourceMode() === 'upload') {
+      return !!this.selectedFile();
+    }
+
+    return !!this.youtubeUrl().trim() && !this.youtubeUrlError();
+  });
 
   constructor() {
-    // Reset results whenever a new file is chosen.
+    // Reset results whenever video source input changes.
     effect(() => {
-      if (this.selectedFile()) {
+      const mode = this.sourceMode();
+      const selectedFile = this.selectedFile();
+      const youtubeUrl = this.youtubeUrl();
+
+      if (
+        (mode === 'upload' && selectedFile) ||
+        (mode === 'youtube' && youtubeUrl.trim().length > 0)
+      ) {
         this.srtContent.set(null);
         this.detectedLanguage.set(null);
         this.isPreparingVideo.set(false);
         this.clearVideoDownloadUrl();
-        this.videoFileName.set(this.buildSubtitledFileName(this.selectedFile()!.name));
+        if (mode === 'upload' && selectedFile) {
+          this.videoFileName.set(this.buildSubtitledFileName(selectedFile.name));
+        } else {
+          this.videoFileName.set('youtube_subtitled.mp4');
+        }
         this.errorMessage.set(null);
       }
     });
+  }
+
+  onSourceModeChange(mode: VideoSourceMode): void {
+    if (mode === this.sourceMode()) {
+      return;
+    }
+
+    this.sourceMode.set(mode);
+    this.selectedFile.set(null);
+    this.youtubeUrl.set('');
+  }
+
+  onYoutubeUrlChange(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    this.youtubeUrl.set(input?.value ?? '');
   }
 
   onBurnSubtitlesChange(event: Event): void {
@@ -53,20 +104,36 @@ export class App {
   }
 
   submit(): void {
+    if (!this.canSubmit()) return;
+
+    const mode = this.sourceMode();
     const file = this.selectedFile();
-    if (!file || !this.canSubmit()) return;
+    const youtubeUrl = this.youtubeUrl().trim();
+    if (mode === 'upload' && !file) return;
+    if (mode === 'youtube' && !youtubeUrl) return;
 
     this.isProcessing.set(true);
     this.isPreparingVideo.set(false);
     this.srtContent.set(null);
     this.detectedLanguage.set(null);
     this.clearVideoDownloadUrl();
-    this.videoFileName.set(this.buildSubtitledFileName(file.name));
+    this.videoFileName.set(
+      mode === 'upload' && file ? this.buildSubtitledFileName(file.name) : 'youtube_subtitled.mp4',
+    );
     this.errorMessage.set(null);
 
     const sourceLanguage = this.sourceLanguage() || undefined;
 
-    this.subtitleService.processVideo(file, this.targetLanguage(), sourceLanguage).subscribe({
+    const processRequest =
+      mode === 'upload' && file
+        ? this.subtitleService.processVideo(file, this.targetLanguage(), sourceLanguage)
+        : this.subtitleService.processYouTubeVideo(
+            youtubeUrl,
+            this.targetLanguage(),
+            sourceLanguage,
+          );
+
+    processRequest.subscribe({
       next: (res) => {
         this.srtContent.set(res.srt_content);
         this.detectedLanguage.set(res.detected_language);
@@ -86,7 +153,16 @@ export class App {
 
         this.isPreparingVideo.set(true);
 
-        this.subtitleService.burnVideo(file, this.targetLanguage(), sourceLanguage).subscribe({
+        const burnRequest =
+          mode === 'upload' && file
+            ? this.subtitleService.burnVideo(file, this.targetLanguage(), sourceLanguage)
+            : this.subtitleService.burnYouTubeVideo(
+                youtubeUrl,
+                this.targetLanguage(),
+                sourceLanguage,
+              );
+
+        burnRequest.subscribe({
           next: (videoRes) => {
             const objectUrl = URL.createObjectURL(videoRes.blob);
             this.setVideoDownloadUrl(objectUrl);
@@ -185,5 +261,27 @@ export class App {
     const baseName = originalName.slice(0, dotIndex);
     const extension = originalName.slice(dotIndex);
     return `${baseName}_subtitled${extension}`;
+  }
+
+  private isValidYouTubeUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+
+      if (host === 'youtu.be') {
+        return parsed.pathname.length > 1;
+      }
+
+      if (host === 'youtube.com' || host.endsWith('.youtube.com')) {
+        if (parsed.pathname === '/watch') {
+          return parsed.searchParams.has('v');
+        }
+        return parsed.pathname.startsWith('/shorts/') || parsed.pathname.startsWith('/live/');
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
   }
 }
