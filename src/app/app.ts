@@ -274,7 +274,8 @@ export class App {
 
       if (host === 'youtube.com' || host.endsWith('.youtube.com')) {
         if (parsed.pathname === '/watch') {
-          return parsed.searchParams.has('v');
+          const v = parsed.searchParams.get('v');
+          return v !== null && v.trim() !== '';
         }
         return parsed.pathname.startsWith('/shorts/') || parsed.pathname.startsWith('/live/');
       }
